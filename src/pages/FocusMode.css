@@ -1,0 +1,318 @@
+.focus-page {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-8);
+  height: 100%;
+}
+
+.focus-page__header h1 { margin-bottom: var(--space-2); }
+.focus-page__header p { color: var(--text-muted); font-size: var(--text-sm); }
+
+.focus-layout {
+  display: grid;
+  grid-template-columns: 1fr 300px;
+  gap: var(--space-8);
+  flex: 1;
+}
+
+.focus-main {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-10);
+  padding: var(--space-4) 0;
+}
+
+.focus-page__presets {
+  display: flex;
+  justify-content: center;
+  gap: var(--space-3);
+  width: 100%;
+}
+
+.preset-btn {
+  padding: var(--space-3) var(--space-5);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-1);
+  min-width: 100px;
+  cursor: pointer;
+  transition: all var(--duration-fast);
+}
+
+.preset-btn:hover { border-color: var(--accent); }
+.preset-btn--active { background: var(--accent-subtle); border-color: var(--accent); color: var(--accent); }
+.preset-btn__label { font-size: var(--text-xs); font-weight: 600; }
+.preset-btn__duration { font-size: var(--text-xxs); opacity: 0.7; }
+
+/* Timer Ring */
+.timer-ring-container {
+  position: relative;
+  width: 260px;
+  height: 260px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.timer-ring {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+/* Aura effect */
+.timer-aura {
+  position: absolute;
+  width: 240px;
+  height: 240px;
+  border-radius: var(--radius-full);
+  background: var(--accent);
+  filter: blur(80px);
+  opacity: 0;
+  z-index: -1;
+  transition: opacity 1s var(--ease-out);
+}
+
+.timer-aura.active {
+  opacity: 0.15;
+  animation: aura-pulse 4s infinite alternate;
+}
+
+@keyframes aura-pulse {
+  from { transform: scale(1) translate(0, 0); opacity: 0.1; }
+  to { transform: scale(1.2) translate(10px, -10px); opacity: 0.2; }
+}
+
+.timer-ring__display {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  z-index: 10;
+}
+
+.timer-ring__time {
+  font-family: var(--font-display);
+  font-size: 64px;
+  font-weight: 700;
+  color: var(--text-primary);
+  line-height: 1;
+}
+
+.timer-ring__label {
+  font-size: var(--text-sm);
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin-top: var(--space-2);
+}
+
+.timer-ring__task {
+  margin-top: var(--space-4);
+  font-size: var(--text-xs);
+  color: var(--accent);
+  max-width: 180px;
+}
+
+/* Controls */
+.focus-page__controls {
+  display: flex;
+  align-items: center;
+  gap: var(--space-6);
+}
+
+.focus-page__play-btn {
+  width: 80px;
+  height: 80px;
+  border-radius: var(--radius-full);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--text-primary);
+  color: var(--bg-card);
+  transition: all var(--duration-fast);
+}
+
+.focus-page__play-btn:hover { transform: scale(1.05); background: var(--accent); color: var(--text-inverse); }
+.focus-page__play-btn--active { background: var(--bg-card); color: var(--text-primary); border: 2px solid var(--border-subtle); }
+
+/* Sidebar */
+.focus-sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.focus-card {
+  padding: var(--space-5);
+}
+
+.focus-card__header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--text-xs);
+  font-weight: 600;
+  color: var(--text-secondary);
+  border-bottom: 1px solid var(--border-subtle);
+  padding-bottom: var(--space-3);
+  margin-bottom: var(--space-3);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.focus-tasks-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.focus-task-item {
+  text-align: left;
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-sm);
+  font-size: var(--text-sm);
+  color: var(--text-muted);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: all var(--duration-fast);
+}
+
+.focus-task-item:hover { color: var(--text-primary); background: rgba(255, 255, 255, 0.03); }
+.focus-task-item.active { color: var(--accent); background: var(--accent-subtle); font-weight: 500; }
+
+.focus-sounds-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-2);
+}
+
+.sound-btn {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-sm);
+  font-size: var(--text-sm);
+  color: var(--text-muted);
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--border-subtle);
+  cursor: pointer;
+  transition: all var(--duration-fast);
+}
+
+.sound-btn:hover { background: rgba(255, 255, 255, 0.06); color: var(--text-primary); }
+.sound-btn.active { border-color: var(--accent); color: var(--accent); background: var(--accent-subtle); }
+
+/* Breathing */
+.breathing-container {
+  height: 350px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.breathing {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-12);
+}
+
+.breathing__circle {
+  width: 150px;
+  height: 150px;
+  background: var(--accent);
+  border-radius: var(--radius-full);
+  filter: blur(10px);
+}
+
+.breathing__label {
+  font-size: var(--text-xl);
+  font-weight: 500;
+  color: var(--text-secondary);
+}
+
+.focus-page__sessions {
+  text-align: center;
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+}
+
+.empty-msg { font-style: italic; opacity: 0.6; font-size: var(--text-xs); padding: var(--space-2); }
+
+@media (max-width: 900px) {
+  .focus-layout { grid-template-columns: 1fr; }
+  .focus-sidebar { order: 2; }
+}
+
+/* Zen Mode */
+.focus-page--zen {
+  justify-content: center;
+  align-items: center;
+  padding: 0;
+  background: black;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 9999;
+}
+
+body.zen-mode .sidebar { display: none !important; }
+body.zen-mode .app-shell__main { margin-left: 0 !important; padding: 0 !important; }
+
+.focus-page--zen .focus-page__header,
+.focus-page--zen .focus-sidebar,
+.focus-page--zen .focus-page__sessions,
+.focus-page--zen .preset-btn,
+.focus-page--zen .timer-ring__label {
+  display: none !important;
+}
+
+.focus-page--zen .timer-ring-container {
+  transform: scale(1.5);
+  margin-bottom: var(--space-20);
+}
+
+.focus-page--zen .focus-page__controls {
+  position: fixed;
+  bottom: var(--space-20);
+  background: var(--bg-card);
+  padding: var(--space-4);
+  border-radius: var(--radius-xl);
+}
+
+/* Mixed Audio State */
+.sound-btn.active {
+  background: var(--accent);
+  color: var(--text-inverse);
+  box-shadow: var(--shadow-glow);
+}
+
+/* Heatmap */
+.heatmap {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: 4px;
+  margin-top: var(--space-4);
+}
+
+.heatmap-cell {
+  aspect-ratio: 1;
+  border-radius: 2px;
+  transition: all var(--duration-fast);
+}
+
+.heatmap-cell:hover {
+  transform: scale(1.2);
+  z-index: 1;
+}
