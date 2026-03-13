@@ -5,108 +5,51 @@
 
 /* — Custom Properties — */
 :root {
-  /* Base palette */
-  --bg-deep: hsl(220, 25%, 8%);
-  --bg-base: hsl(220, 25%, 10%);
-  --bg-surface: hsl(220, 15%, 14%);
-  --bg-elevated: hsl(220, 12%, 18%);
-  --bg-hover: hsl(220, 12%, 22%);
+  /* Obsidian Base palette */
+  --bg-deep: hsl(230, 20%, 3%);
+  --bg-base: hsl(230, 20%, 5%);
+  --bg-surface: hsla(230, 20%, 8%, 0.7);
+  --bg-elevated: hsla(230, 20%, 12%, 0.8);
+  --bg-hover: hsla(230, 20%, 16%, 0.9);
 
-  /* Text */
-  --text-primary: hsl(220, 10%, 90%);
-  --text-secondary: hsl(220, 10%, 65%);
-  --text-muted: hsl(220, 10%, 45%);
-  --text-inverse: hsl(220, 25%, 8%);
+  /* Text — Ultra refined Jakarta Sans */
+  --text-primary: hsl(230, 10%, 94%);
+  --text-secondary: hsl(230, 10%, 75%);
+  --text-muted: hsl(230, 10%, 55%);
+  --text-inverse: hsl(230, 20%, 3%);
 
-  /* Module accents */
-  --accent-dashboard: hsl(160, 50%, 55%);
-  --accent-tasks: hsl(160, 50%, 55%);
-  --accent-journal: hsl(35, 70%, 60%);
-  --accent-fear: hsl(250, 50%, 65%);
-  --accent-focus: hsl(200, 60%, 55%);
+  /* Premium Module accents — with luminance control */
+  --accent-dashboard: hsl(165, 80%, 65%);
+  --accent-tasks: hsl(165, 80%, 65%);
+  --accent-journal: hsl(38, 90%, 68%);
+  --accent-fear: hsl(265, 85%, 75%);
+  --accent-focus: hsl(195, 90%, 65%);
 
-  /* Active accent — default to dashboard, overridden by JS */
+  /* Active glow system */
   --accent: var(--accent-dashboard);
-  --accent-glow: hsl(160, 50%, 55% / 0.15);
-  --accent-subtle: hsl(160, 50%, 55% / 0.08);
+  --accent-glow: hsla(var(--accent-h, 165), 80%, 65%, 0.25);
+  --accent-subtle: hsla(var(--accent-h, 165), 80%, 65%, 0.1);
 
+  /* Glass 2.0 — Spatial Depth */
+  --glass-blur: 24px;
+  --glass-border: hsla(0, 0%, 100%, 0.1);
+  --glass-reflection: linear-gradient(120deg, hsla(0, 0%, 100%, 0.05) 0%, transparent 100%);
+  
   /* Borders */
-  --border: hsl(220, 10%, 20%);
-  --border-subtle: hsl(220, 10%, 15%);
+  --border: hsl(230, 20%, 15%);
+  --border-subtle: hsl(230, 20%, 10%);
 
-  /* Priority colors */
-  --priority-urgent: hsl(0, 70%, 60%);
-  --priority-important: hsl(35, 80%, 55%);
-  --priority-can-wait: hsl(200, 40%, 55%);
-
-  /* Mood colors */
-  --mood-1: hsl(0, 50%, 55%);
-  --mood-2: hsl(25, 60%, 55%);
-  --mood-3: hsl(45, 50%, 55%);
-  --mood-4: hsl(120, 40%, 55%);
-  --mood-5: hsl(160, 50%, 55%);
-
-  /* Spacing (4px grid) */
-  --space-1: 0.25rem;
-  --space-2: 0.5rem;
-  --space-3: 0.75rem;
-  --space-4: 1rem;
-  --space-5: 1.25rem;
-  --space-6: 1.5rem;
-  --space-8: 2rem;
-  --space-10: 2.5rem;
-  --space-12: 3rem;
-  --space-16: 4rem;
-  --space-20: 5rem;
-
-  /* Typography */
+  /* Typography — Spatial Scale */
   --font-display: 'DM Serif Display', Georgia, serif;
   --font-body: 'Plus Jakarta Sans', system-ui, sans-serif;
 
-  --text-xs: 0.75rem;
-  --text-sm: 0.875rem;
-  --text-base: 1rem;
-  --text-lg: 1.125rem;
-  --text-xl: 1.25rem;
-  --text-2xl: 1.5rem;
-  --text-3xl: 1.875rem;
-  --text-4xl: 2.25rem;
-  --text-5xl: 3rem;
+  /* Standard spacing and radius remain for consistency */
+  --space-1: 0.25rem; --space-2: 0.5rem; --space-4: 1rem; --space-6: 1.5rem; --space-8: 2rem;
+  --radius-sm: 8px; --radius-md: 14px; --radius-lg: 20px; --radius-xl: 32px; --radius-full: 9999px;
 
-  --leading-tight: 1.2;
-  --leading-normal: 1.5;
-  --leading-relaxed: 1.75;
-
-  /* Borders */
-  --radius-sm: 8px;
-  --radius-md: 12px;
-  --radius-lg: 16px;
-  --radius-xl: 24px;
-  --radius-full: 9999px;
-
-  /* Motion */
-  --duration-fast: 150ms;
-  --duration-normal: 250ms;
-  --duration-slow: 350ms;
-  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
-  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
-
-  /* Shadows */
-  --shadow-sm: 0 1px 3px hsl(0 0% 0% / 0.3);
-  --shadow-md: 0 4px 12px hsl(0 0% 0% / 0.4);
-  --shadow-lg: 0 8px 32px hsl(0 0% 0% / 0.5);
-  --shadow-glow: 0 0 20px var(--accent-glow);
-
-  /* Sidebar */
-  --sidebar-width: 260px;
-  --sidebar-collapsed: 72px;
-
-  /* Z-index scale */
-  --z-base: 0;
-  --z-dropdown: 10;
-  --z-sticky: 20;
-  --z-overlay: 30;
-  --z-modal: 50;
+  /* Premium Motion */
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --ease-fluid: cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 /* — Reset & Base — */
@@ -194,18 +137,28 @@ a:hover { opacity: 0.8; }
 
 /* — Utility Classes — */
 .glass-card {
-  background: linear-gradient(135deg, hsl(220 15% 14% / 0.8), hsl(220 15% 10% / 0.4));
-  backdrop-filter: blur(20px) saturate(180%);
-  -webkit-backdrop-filter: blur(20px) saturate(180%);
-  border: 1px solid hsla(220, 10%, 100%, 0.08);
+  position: relative;
+  background: var(--bg-surface);
+  backdrop-filter: blur(var(--glass-blur)) saturate(180%);
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(180%);
+  border: 1px solid var(--glass-border);
   border-radius: var(--radius-lg);
-  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
-  transition: all var(--duration-normal) var(--ease-out);
+  overflow: hidden;
+  transition: all 0.4s var(--ease-fluid);
 }
+
+.glass-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: var(--glass-reflection);
+  pointer-events: none;
+}
+
 .glass-card:hover {
-  border-color: hsla(220, 10%, 100%, 0.15);
-  transform: translateY(-2px);
-  box-shadow: 0 12px 40px 0 rgba(0, 0, 0, 0.45);
+  border-color: hsla(0, 0%, 100%, 0.2);
+  transform: translateY(-4px) scale(1.01);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
 }
 
 .btn {
@@ -213,63 +166,50 @@ a:hover { opacity: 0.8; }
   align-items: center;
   justify-content: center;
   gap: var(--space-2);
-  padding: var(--space-3) var(--space-6);
+  padding: 0.8rem 1.6rem;
   font-family: var(--font-body);
   font-size: var(--text-sm);
   font-weight: 600;
-  border: none;
+  border: 1px solid transparent;
   border-radius: var(--radius-md);
   cursor: pointer;
-  transition: all var(--duration-fast) var(--ease-out);
+  transition: all 0.3s var(--ease-spring);
   white-space: nowrap;
+  letter-spacing: 0.01em;
 }
+
 .btn:active {
-  transform: scale(0.97);
+  transform: scale(0.95);
 }
 
 .btn-primary {
   background: var(--accent);
   color: var(--text-inverse);
+  box-shadow: 0 4px 12px var(--accent-glow);
 }
+
 .btn-primary:hover {
+  transform: translateY(-2px);
   filter: brightness(1.1);
-  box-shadow: var(--shadow-glow);
+  box-shadow: 0 8px 24px var(--accent-glow);
 }
 
 .btn-ghost {
-  background: transparent;
+  background: var(--bg-surface);
   color: var(--text-secondary);
   border: 1px solid var(--border);
+  backdrop-filter: blur(8px);
 }
+
 .btn-ghost:hover {
   background: var(--bg-hover);
   color: var(--text-primary);
-}
-
-.btn-danger {
-  background: hsl(0, 70%, 50% / 0.15);
-  color: hsl(0, 70%, 65%);
-  border: 1px solid hsl(0, 70%, 50% / 0.3);
-}
-.btn-danger:hover {
-  background: hsl(0, 70%, 50% / 0.25);
-}
-
-.btn-sm {
-  padding: var(--space-2) var(--space-4);
-  font-size: var(--text-xs);
-}
-
-.btn-icon {
-  width: 36px;
-  height: 36px;
-  padding: 0;
-  border-radius: var(--radius-sm);
+  border-color: var(--accent);
 }
 
 .input {
   width: 100%;
-  padding: var(--space-3) var(--space-4);
+  padding: 1rem 1.2rem;
   font-family: var(--font-body);
   font-size: var(--text-base);
   color: var(--text-primary);
@@ -277,13 +217,16 @@ a:hover { opacity: 0.8; }
   border: 1px solid var(--border);
   border-radius: var(--radius-md);
   outline: none;
-  transition: border-color var(--duration-fast) var(--ease-out),
-              box-shadow var(--duration-fast) var(--ease-out);
+  transition: all 0.3s var(--ease-fluid);
 }
+
 .input:focus {
   border-color: var(--accent);
-  box-shadow: 0 0 0 3px var(--accent-subtle);
+  background: var(--bg-elevated);
+  box-shadow: 0 0 0 4px var(--accent-subtle);
+  transform: translateY(-1px);
 }
+
 .input::placeholder {
   color: var(--text-muted);
 }

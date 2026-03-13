@@ -115,41 +115,58 @@ export default function Tasks() {
         ))}
       </div>
 
-      <div className="tasks-page__list">
-        <AnimatePresence mode="popLayout">
-          {filtered.map((task) => (
+      <motion.div 
+        layout
+        className="tasks-page__list"
+      >
+        <AnimatePresence mode="popLayout" initial={false}>
+          {filtered.map((task, index) => (
             <motion.div
               key={task.id}
               layout
-              initial={{ opacity: 0, y: 8 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, x: -20, transition: { duration: 0.2 } }}
-              transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
+              initial={{ opacity: 0, x: -20, filter: 'blur(5px)' }}
+              animate={{ opacity: 1, x: 0, filter: 'blur(0px)' }}
+              exit={{ opacity: 0, x: 20, filter: 'blur(5px)' }}
+              transition={{ 
+                duration: 0.4, 
+                ease: [0.34, 1.56, 0.64, 1],
+                delay: index * 0.05 
+              }}
               className={`task-card glass-card ${task.completed ? 'task-card--done' : ''}`}
             >
-              <button
+              <motion.button
+                whileTap={{ scale: 0.9 }}
                 className={`task-card__check ${task.completed ? 'task-card__check--checked' : ''}`}
                 onClick={() => toggleTask(task.id)}
                 aria-label={task.completed ? 'Mark as incomplete' : 'Mark as complete'}
                 style={{ '--p-color': priorityConfig[task.priority].color } as React.CSSProperties}
               >
-                {task.completed && <Check size={14} />}
-              </button>
+                {task.completed && (
+                  <motion.div
+                    initial={{ scale: 0 }}
+                    animate={{ scale: 1 }}
+                  >
+                    <Check size={16} strokeWidth={3} />
+                  </motion.div>
+                )}
+              </motion.button>
 
               <div className="task-card__content">
                 <span className={`task-card__title ${task.completed ? 'task-card__title--done' : ''}`}>
                   {task.title}
                 </span>
-                <span
+                <motion.span
+                  layoutId={`priority-${task.id}`}
                   className="badge"
                   style={{
                     background: `color-mix(in srgb, ${priorityConfig[task.priority].color} 15%, transparent)`,
                     color: priorityConfig[task.priority].color,
+                    border: `1px solid color-mix(in srgb, ${priorityConfig[task.priority].color} 30%, transparent)`,
                   }}
                 >
                   {priorityConfig[task.priority].icon}
                   {priorityConfig[task.priority].label}
-                </span>
+                </motion.span>
               </div>
 
               <button
@@ -164,11 +181,15 @@ export default function Tasks() {
         </AnimatePresence>
 
         {filtered.length === 0 && (
-          <div className="tasks-page__empty">
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="tasks-page__empty"
+          >
             <p>{filter === 'completed' ? 'No completed tasks yet.' : 'All clear! Add something above.'}</p>
-          </div>
+          </motion.div>
         )}
-      </div>
+      </motion.div>
     </div>
   );
 }

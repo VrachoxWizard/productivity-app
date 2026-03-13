@@ -98,7 +98,7 @@ export default function Journal() {
     const prompt: Prompt = {
       id: generateId(),
       text: newPromptText.trim(),
-      category: newPromptCategory,
+      category: newPromptCategory as Prompt['category'],
       isCustom: true,
     };
     persistCustomPrompts([prompt, ...customPrompts]);
@@ -194,35 +194,52 @@ export default function Journal() {
                   <p>No entries yet. Start writing to see your thoughts here.</p>
                 </div>
               ) : (
-                <div className="entries-list">
-                  {entries.map((entry) => (
-                    <motion.div
-                      key={entry.id}
-                      className="entry-card glass-card"
-                      layout
-                    >
-                      <div className="entry-card__header">
-                        <div className="entry-card__meta">
-                          <Calendar size={14} />
-                          <span>{formatDate(entry.createdAt)}</span>
-                          <span className="mood-dot mood-dot--sm" style={{ background: `var(--mood-${entry.mood})` }} />
-                          <span className="entry-card__mood-label">{moodLabels[entry.mood]}</span>
-                        </div>
-                        <button
-                          className="btn btn-icon btn-ghost btn-sm entry-card__delete"
-                          onClick={() => deleteEntry(entry.id)}
-                        >
-                          <Trash2 size={14} />
-                        </button>
+            <motion.div 
+              layout
+              className="entries-list"
+            >
+              <AnimatePresence mode="popLayout" initial={false}>
+                {entries.map((entry, index) => (
+                  <motion.div
+                    key={entry.id}
+                    layout
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, scale: 0.95 }}
+                    transition={{ 
+                      duration: 0.4, 
+                      ease: [0.34, 1.56, 0.64, 1],
+                      delay: index * 0.05 
+                    }}
+                    className="entry-card glass-card"
+                  >
+                    <div className="entry-card__header">
+                      <div className="entry-card__meta">
+                        <Calendar size={14} />
+                        <span>{formatDate(entry.createdAt)}</span>
+                        <div className="mood-dot mood-dot--sm" style={{ background: `var(--mood-${entry.mood})`, opacity: 1 }} />
+                        <span className="entry-card__mood-label">{moodLabels[entry.mood]}</span>
                       </div>
-                      {entry.promptUsed && (
-                        <p className="entry-card__prompt"><Sparkles size={12} /> {entry.promptUsed}</p>
-                      )}
-                      <p className="entry-card__text">{entry.content}</p>
-                      <span className="entry-card__wc">{entry.wordCount} words</span>
-                    </motion.div>
-                  ))}
-                </div>
+                      <motion.button
+                        whileHover={{ scale: 1.1 }}
+                        whileTap={{ scale: 0.9 }}
+                        className="btn btn-icon btn-ghost btn-sm entry-card__delete"
+                        onClick={() => deleteEntry(entry.id)}
+                      >
+                        <Trash2 size={14} />
+                      </motion.button>
+                    </div>
+                    {entry.promptUsed && (
+                      <p className="entry-card__prompt"><Sparkles size={12} /> {entry.promptUsed}</p>
+                    )}
+                    <p className="entry-card__text">{entry.content}</p>
+                    <div className="entry-card__footer" style={{ marginTop: '1.5rem', display: 'flex', justifyContent: 'flex-end' }}>
+                      <span className="entry-card__wc" style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>{entry.wordCount} words</span>
+                    </div>
+                  </motion.div>
+                ))}
+              </AnimatePresence>
+            </motion.div>
               )}
             </div>
           </motion.div>
@@ -263,8 +280,10 @@ export default function Journal() {
                 <span className="label" style={{ marginBottom: 0 }}>Mood:</span>
                 <div className="mood-selector">
                   {([1, 2, 3, 4, 5] as MoodLevel[]).map((m) => (
-                    <button
+                    <motion.button
                       key={m}
+                      whileHover={{ scale: 1.15, opacity: 0.8 }}
+                      whileTap={{ scale: 0.9 }}
                       className={`mood-dot ${mood === m ? 'mood-dot--active' : ''}`}
                       style={{ background: `var(--mood-${m})` }}
                       onClick={() => setMood(m)}

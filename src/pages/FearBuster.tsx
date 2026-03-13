@@ -266,24 +266,45 @@ export default function FearBuster() {
               </div>
             </div>
 
-            <div className="exercise-grid">
-              {filteredExercises.map((ex) => (
-                <button
-                  key={ex.id}
-                  className="exercise-card glass-card"
-                  onClick={() => setActiveExercise(ex.id)}
-                  style={{ '--ex-color': ex.color } as any}
-                >
-                  <span className="exercise-card__cat-badge">{ex.category}</span>
-                  <div className="exercise-card__icon">{ex.icon}</div>
-                  <div className="exercise-card__info">
-                    <h3>{ex.title}</h3>
-                    <p>{ex.desc}</p>
-                  </div>
-                  <Plus size={20} className="exercise-card__plus" />
-                </button>
-              ))}
-            </div>
+            <motion.div 
+              layout
+              className="exercise-grid"
+            >
+              <AnimatePresence mode="popLayout" initial={false}>
+                {filteredExercises.map((ex, index) => (
+                  <motion.button
+                    key={ex.id}
+                    layout
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.9 }}
+                    transition={{ 
+                      duration: 0.4, 
+                      ease: [0.34, 1.56, 0.64, 1],
+                      delay: index * 0.03 
+                    }}
+                    whileHover={{ y: -8 }}
+                    whileTap={{ scale: 0.98 }}
+                    className="exercise-card glass-card"
+                    onClick={() => setActiveExercise(ex.id)}
+                    style={{ '--ex-color': ex.color } as any}
+                  >
+                    <span className="exercise-card__cat-badge">{ex.category}</span>
+                    <div className="exercise-card__icon">{ex.icon}</div>
+                    <div className="exercise-card__info">
+                      <h3>{ex.title}</h3>
+                      <p>{ex.desc}</p>
+                    </div>
+                    <motion.div
+                      initial={{ rotate: 0 }}
+                      whileHover={{ rotate: 90 }}
+                    >
+                      <Plus size={20} className="exercise-card__plus" />
+                    </motion.div>
+                  </motion.button>
+                ))}
+              </AnimatePresence>
+            </motion.div>
 
             {logs.length > 0 && (
               <div className="fear-page__history">
