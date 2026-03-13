@@ -125,7 +125,12 @@ export default function Dashboard() {
       <header className="dashboard__header">
         <motion.div className="dashboard__greeting" variants={fadeUp}>
           <span className="dashboard__greeting-icon">{greeting.icon}</span>
-          <h1>{greeting.text}</h1>
+          <div className="dashboard__greeting-text">
+            <h1>{greeting.text}</h1>
+            <p className="text-muted">
+              {new Date().toLocaleDateString(undefined, { weekday: 'long', month: 'long', day: 'numeric' })}
+            </p>
+          </div>
         </motion.div>
         
         <motion.div className="dashboard__focus-meter glass-card" variants={fadeUp}>

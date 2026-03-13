@@ -1,55 +1,136 @@
 /* =========================================================
    MindSpace — Design System
-   Therapeutic Minimal — Dark calming palette with module accents
+   Therapeutic Obsidian — Premium dark palette with spatial depth,
+   living ambient light, and glass layering
    ========================================================= */
 
 /* — Custom Properties — */
 :root {
-  /* Obsidian Base palette */
+  /* ── Obsidian Base palette ── */
   --bg-deep: hsl(230, 20%, 3%);
   --bg-base: hsl(230, 20%, 5%);
   --bg-surface: hsla(230, 20%, 8%, 0.7);
   --bg-elevated: hsla(230, 20%, 12%, 0.8);
   --bg-hover: hsla(230, 20%, 16%, 0.9);
+  --bg-card: hsla(230, 20%, 10%, 0.6);
 
-  /* Text — Ultra refined Jakarta Sans */
+  /* ── Text — Ultra refined Jakarta Sans ── */
   --text-primary: hsl(230, 10%, 94%);
   --text-secondary: hsl(230, 10%, 75%);
   --text-muted: hsl(230, 10%, 55%);
   --text-inverse: hsl(230, 20%, 3%);
 
-  /* Premium Module accents — with luminance control */
+  /* ── Typographic Scale (1.25 Major Third) ── */
+  --text-xxs: 0.625rem;   /* 10px */
+  --text-xs: 0.75rem;     /* 12px */
+  --text-sm: 0.875rem;    /* 14px */
+  --text-base: 1rem;      /* 16px */
+  --text-lg: 1.125rem;    /* 18px */
+  --text-xl: 1.25rem;     /* 20px */
+  --text-2xl: 1.5rem;     /* 24px */
+  --text-3xl: 1.875rem;   /* 30px */
+  --text-4xl: 2.25rem;    /* 36px */
+  --text-5xl: 3rem;       /* 48px */
+
+  /* ── Line Heights ── */
+  --leading-none: 1;
+  --leading-tight: 1.2;
+  --leading-snug: 1.35;
+  --leading-normal: 1.5;
+  --leading-relaxed: 1.65;
+  --leading-loose: 1.8;
+
+  /* ── Premium Module Accents ── */
   --accent-dashboard: hsl(165, 80%, 65%);
   --accent-tasks: hsl(165, 80%, 65%);
   --accent-journal: hsl(38, 90%, 68%);
   --accent-fear: hsl(265, 85%, 75%);
   --accent-focus: hsl(195, 90%, 65%);
 
-  /* Active glow system */
+  /* ── Active Glow System ── */
   --accent: var(--accent-dashboard);
+  --accent-h: 165;
   --accent-glow: hsla(var(--accent-h, 165), 80%, 65%, 0.25);
   --accent-subtle: hsla(var(--accent-h, 165), 80%, 65%, 0.1);
 
-  /* Glass 2.0 — Spatial Depth */
+  /* ── Priority Colors ── */
+  --priority-urgent: hsl(0, 85%, 65%);
+  --priority-important: hsl(38, 90%, 65%);
+  --priority-can-wait: hsl(195, 70%, 60%);
+
+  /* ── Mood Colors (1=low → 5=great) ── */
+  --mood-1: hsl(0, 70%, 60%);
+  --mood-2: hsl(25, 80%, 60%);
+  --mood-3: hsl(50, 75%, 60%);
+  --mood-4: hsl(120, 50%, 55%);
+  --mood-5: hsl(165, 80%, 60%);
+
+  /* ── Glass 2.0 — Spatial Depth ── */
   --glass-blur: 24px;
   --glass-border: hsla(0, 0%, 100%, 0.1);
-  --glass-reflection: linear-gradient(120deg, hsla(0, 0%, 100%, 0.05) 0%, transparent 100%);
-  
-  /* Borders */
+  --glass-reflection: linear-gradient(
+    135deg,
+    hsla(0, 0%, 100%, 0.08) 0%,
+    hsla(0, 0%, 100%, 0.02) 40%,
+    transparent 100%
+  );
+
+  /* ── Borders ── */
   --border: hsl(230, 20%, 15%);
   --border-subtle: hsl(230, 20%, 10%);
 
-  /* Typography — Spatial Scale */
+  /* ── Typography — Font Stacks ── */
   --font-display: 'DM Serif Display', Georgia, serif;
   --font-body: 'Plus Jakarta Sans', system-ui, sans-serif;
 
-  /* Standard spacing and radius remain for consistency */
-  --space-1: 0.25rem; --space-2: 0.5rem; --space-4: 1rem; --space-6: 1.5rem; --space-8: 2rem;
-  --radius-sm: 8px; --radius-md: 14px; --radius-lg: 20px; --radius-xl: 32px; --radius-full: 9999px;
+  /* ── Spacing Scale ── */
+  --space-1: 0.25rem;    /* 4px */
+  --space-2: 0.5rem;     /* 8px */
+  --space-3: 0.75rem;    /* 12px */
+  --space-4: 1rem;       /* 16px */
+  --space-5: 1.25rem;    /* 20px */
+  --space-6: 1.5rem;     /* 24px */
+  --space-8: 2rem;       /* 32px */
+  --space-10: 2.5rem;    /* 40px */
+  --space-12: 3rem;      /* 48px */
+  --space-16: 4rem;      /* 64px */
+  --space-20: 5rem;      /* 80px */
 
-  /* Premium Motion */
+  /* ── Radius Scale ── */
+  --radius-sm: 8px;
+  --radius-md: 14px;
+  --radius-lg: 20px;
+  --radius-xl: 32px;
+  --radius-2xl: 40px;
+  --radius-full: 9999px;
+
+  /* ── Shadows ── */
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.2);
+  --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.3);
+  --shadow-lg: 0 16px 48px rgba(0, 0, 0, 0.4);
+  --shadow-glow: 0 0 20px var(--accent-glow);
+  --shadow-card: 0 4px 20px rgba(0, 0, 0, 0.25), 0 0 0 1px var(--glass-border);
+
+  /* ── Duration ── */
+  --duration-fast: 150ms;
+  --duration-normal: 300ms;
+  --duration-slow: 500ms;
+
+  /* ── Easing ── */
   --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
   --ease-fluid: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+
+  /* ── Z-Index Scale ── */
+  --z-base: 0;
+  --z-elevated: 10;
+  --z-sticky: 20;
+  --z-overlay: 30;
+  --z-modal: 50;
+
+  /* ── Layout ── */
+  --sidebar-width: 260px;
+  --sidebar-collapsed: 80px;
 }
 
 /* — Reset & Base — */
@@ -145,6 +226,7 @@ a:hover { opacity: 0.8; }
   border-radius: var(--radius-lg);
   overflow: hidden;
   transition: all 0.4s var(--ease-fluid);
+  box-shadow: var(--shadow-card);
 }
 
 .glass-card::before {
@@ -153,12 +235,29 @@ a:hover { opacity: 0.8; }
   inset: 0;
   background: var(--glass-reflection);
   pointer-events: none;
+  z-index: 1;
 }
 
 .glass-card:hover {
-  border-color: hsla(0, 0%, 100%, 0.2);
+  border-color: hsla(0, 0%, 100%, 0.15);
+  transform: translateY(-2px);
+  box-shadow:
+    0 12px 32px rgba(0, 0, 0, 0.35),
+    0 0 0 1px hsla(0, 0%, 100%, 0.12),
+    inset 0 1px 0 hsla(0, 0%, 100%, 0.06);
+}
+
+/* Interactive glass card — for clickable cards with stronger hover */
+.glass-card--interactive {
+  cursor: pointer;
+}
+
+.glass-card--interactive:hover {
   transform: translateY(-4px) scale(1.01);
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+  box-shadow:
+    0 20px 48px rgba(0, 0, 0, 0.4),
+    0 0 0 1px hsla(0, 0%, 100%, 0.15),
+    inset 0 1px 0 hsla(0, 0%, 100%, 0.08);
 }
 
 .btn {

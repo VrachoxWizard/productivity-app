@@ -1,9 +1,9 @@
 import { useEffect, useState, type ReactNode } from 'react';
 import { useLocation } from 'react-router-dom';
 import { AnimatePresence, motion } from 'framer-motion';
-import Sidebar from './Sidebar';
-import BackgroundAura from './BackgroundAura';
-import type { ModuleAccent } from '../../types';
+import Sidebar from '@/components/Layout/Sidebar';
+import BackgroundAura from '@/components/Layout/BackgroundAura';
+import type { ModuleAccent } from '@/types';
 import './AppShell.css';
 
 const accentMap: Record<string, { accent: ModuleAccent; hue: number }> = {
@@ -62,10 +62,10 @@ export default function AppShell({ children }: AppShellProps) {
           <motion.div
             key={location.pathname}
             custom={direction}
-            initial={{ opacity: 0, x: direction * 40, filter: 'blur(10px)' }}
-            animate={{ opacity: 1, x: 0, filter: 'blur(0px)' }}
-            exit={{ opacity: 0, x: direction * -40, filter: 'blur(10px)' }}
-            transition={{ duration: 0.5, ease: [0.34, 1.56, 0.64, 1] }}
+            initial={{ opacity: 0, x: direction * 40, y: 10, filter: 'blur(10px)' }}
+            animate={{ opacity: 1, x: 0, y: 0, filter: 'blur(0px)' }}
+            exit={{ opacity: 0, x: direction * -40, y: -10, filter: 'blur(10px)' }}
+            transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
             className="app-shell__content"
           >
             {children}

@@ -32,6 +32,14 @@
   gap: var(--space-3);
   padding: 0.75rem 1.25rem;
   border-radius: var(--radius-lg);
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  transition: all 0.3s var(--ease-fluid);
+}
+
+.search-box:focus-within {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 4px var(--accent-subtle);
 }
 
 .category-tabs {
@@ -58,6 +66,16 @@
   transition: all 0.4s var(--ease-fluid);
   position: relative;
   overflow: hidden;
+  background: var(--bg-card);
+}
+
+.exercise-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 50% 0%, color-mix(in srgb, var(--ex-color) 15%, transparent), transparent 70%);
+  opacity: 0;
+  transition: opacity 0.4s var(--ease-fluid);
 }
 
 .exercise-card:hover {
@@ -65,6 +83,10 @@
   transform: translateY(-8px);
   border-color: var(--ex-color);
   box-shadow: 0 20px 40px -20px var(--ex-color);
+}
+
+.exercise-card:hover::before {
+  opacity: 1;
 }
 
 .exercise-card__cat-badge {
@@ -75,6 +97,7 @@
   font-weight: 800;
   color: var(--text-muted);
   letter-spacing: 0.1em;
+  text-transform: uppercase;
 }
 
 .exercise-card__icon {
@@ -88,10 +111,18 @@
   color: var(--ex-color);
   border: 1px solid var(--border);
   box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+  transition: all 0.4s var(--ease-spring);
+}
+
+.exercise-card:hover .exercise-card__icon {
+  transform: translateY(-4px) rotate(5deg);
+  box-shadow: 0 12px 24px -8px var(--ex-color);
+  border-color: var(--ex-color);
 }
 
 .exercise-card h3 { 
   font-size: var(--text-lg); 
+  color: var(--text-primary);
 }
 
 .exercise-card p { 
@@ -121,6 +152,13 @@
 .cbt-log {
   border-radius: var(--radius-xl);
   overflow: hidden;
+  background: var(--bg-card);
+  transition: all 0.3s var(--ease-fluid);
+}
+
+.cbt-log--open {
+  background: var(--bg-surface);
+  box-shadow: var(--shadow-md);
 }
 
 .cbt-log__header {
@@ -130,6 +168,10 @@
   justify-content: space-between;
   cursor: pointer;
   transition: background 0.3s var(--ease-fluid);
+}
+
+.cbt-log__header:hover {
+  background: rgba(255, 255, 255, 0.02);
 }
 
 .cbt-log__meta {
@@ -145,6 +187,9 @@
   letter-spacing: 0.05em;
   padding: 4px 10px;
   border-radius: var(--radius-sm);
+  background: var(--accent-subtle);
+  color: var(--accent);
+  border: 1px solid hsla(var(--accent-h), 80%, 65%, 0.2);
 }
 
 .cbt-log__date {
@@ -156,6 +201,12 @@
   padding: 2rem;
   border-top: 1px solid var(--border);
   background: rgba(0, 0, 0, 0.2);
+  animation: slide-down 0.3s var(--ease-out);
+}
+
+@keyframes slide-down {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 @media (max-width: 768px) {

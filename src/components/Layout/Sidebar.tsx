@@ -10,7 +10,7 @@ import {
 } from 'lucide-react';
 import { useState } from 'react';
 import { motion, useMotionValue, useSpring } from 'framer-motion';
-import type { ModuleAccent } from '../../types';
+import type { ModuleAccent } from '@/types';
 import './Sidebar.css';
 
 interface NavItem {
@@ -104,6 +104,7 @@ export default function Sidebar({ onAccentChange }: SidebarProps) {
                 data-accent={item.accent}
                 onClick={() => onAccentChange(item.accent)}
                 title={collapsed ? item.label : undefined}
+                aria-current={active ? 'page' : undefined}
               >
                 <MagneticIcon>
                   <span className="sidebar__icon">{item.icon}</span>

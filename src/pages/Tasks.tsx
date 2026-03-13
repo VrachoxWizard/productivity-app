@@ -182,11 +182,18 @@ export default function Tasks() {
 
         {filtered.length === 0 && (
           <motion.div 
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
             className="tasks-page__empty"
           >
-            <p>{filter === 'completed' ? 'No completed tasks yet.' : 'All clear! Add something above.'}</p>
+            <div className="empty-illustration">
+              <svg width="120" height="120" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="60" cy="60" r="50" stroke="currentColor" strokeWidth="2" strokeDasharray="4 8" opacity="0.2" />
+                <path d="M40 60L55 75L80 45" stroke="var(--accent)" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" opacity="0.3" />
+                <rect x="30" y="30" width="60" height="60" rx="12" stroke="currentColor" strokeWidth="1" opacity="0.1" />
+              </svg>
+            </div>
+            <p>{filter === 'completed' ? 'No completed tasks yet.' : 'The slate is clean. What will you conquer today?'}</p>
           </motion.div>
         )}
       </motion.div>

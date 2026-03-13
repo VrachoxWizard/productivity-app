@@ -32,13 +32,16 @@
   border: 1px solid var(--border);
 }
 
-/* Prompt Card */
+/* Prompt Card — mesh gradient */
 .prompt-card {
   padding: 3rem;
   border-radius: var(--radius-2xl);
   position: relative;
   overflow: hidden;
-  background: linear-gradient(135deg, hsla(var(--accent-h), 40%, 15%, 0.4), transparent);
+  background:
+    radial-gradient(ellipse at 20% 30%, hsla(var(--accent-h), 40%, 20%, 0.35), transparent 50%),
+    radial-gradient(ellipse at 80% 70%, hsla(var(--accent-h), 60%, 15%, 0.25), transparent 50%),
+    var(--bg-surface);
 }
 
 .prompt-card__header {
@@ -99,6 +102,11 @@
   border: none;
   padding: 0;
   resize: none;
+  caret-color: var(--accent);
+}
+
+.journal-editor__textarea:focus {
+  outline: none;
 }
 
 .journal-editor__meta {
@@ -125,7 +133,15 @@
 }
 
 .mood-dot:hover { opacity: 0.8; transform: scale(1.1); }
-.mood-dot--active { opacity: 1; transform: scale(1.2); border-color: var(--text-primary); box-shadow: 0 0 20px hsla(var(--accent-h), 60%, 50%, 0.4); }
+
+.mood-dot--active {
+  opacity: 1;
+  transform: scale(1.2);
+  border-color: var(--text-primary);
+  box-shadow:
+    0 0 12px hsla(var(--accent-h), 60%, 50%, 0.4),
+    0 0 24px hsla(var(--accent-h), 60%, 50%, 0.15);
+}
 
 /* Browse & Prompts */
 .prompts-grid {
@@ -144,7 +160,8 @@
 .prompt-item:hover {
   background: var(--bg-surface);
   border-color: var(--accent);
-  transform: translateY(-8px);
+  transform: translateY(-6px);
+  box-shadow: 0 16px 32px rgba(0, 0, 0, 0.3);
 }
 
 .prompt-item__category {
@@ -172,6 +189,11 @@
 .entry-card {
   padding: 2.5rem;
   border-radius: var(--radius-2xl);
+  transition: all 0.4s var(--ease-fluid);
+}
+
+.entry-card:hover {
+  transform: translateY(-2px);
 }
 
 .entry-card__meta {
