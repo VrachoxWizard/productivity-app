@@ -19,7 +19,8 @@ import {
   Plus,
   Droplet
 } from 'lucide-react';
-import { loadData, saveData, generateId } from '../lib/storage';
+import { useAuth } from '../components/Auth/AuthContext';
+import { useFirestore } from '../lib/firestore';
 import { useMindSpaceData } from '../hooks/useMindSpaceData';
 import type { Task, JournalEntry, TherapyLog, FocusSession, MoodLevel } from '../types';
 import { generateDynamicInsight } from '../lib/analytics';

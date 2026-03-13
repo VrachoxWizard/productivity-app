@@ -17,7 +17,8 @@ import {
   Eye,
   Activity
 } from 'lucide-react';
-import { loadData, saveData, generateId } from '../lib/storage';
+import { useAuth } from '../components/Auth/AuthContext';
+import { useFirestore } from '../lib/firestore';
 import type { FocusSession, Task } from '../types';
 import { useSound } from '../hooks/useSound';
 import './FocusMode.css';
@@ -38,9 +39,26 @@ const ambientSounds = [
 const CIRCUMFERENCE = 2 * Math.PI * 120;
 
 export default function FocusMode() {
+  const { user } = useAuth();
+  const { subscribeToCollection, addDocument } = useFirestore(user!.uid);
+
   const [sessions, setSessions] = useState<FocusSession[]>([]);
   const [tasks, setTasks] = useState<Task[]>([]);
   const [selectedTaskId, setSelectedTaskId] = useState<string | null>(null);
+  
+  useEffect(() => {
+    const unsubSessions = subscribeToCollection<FocusSession>('focus_sessions', (data) => {
+      setSessions(data);
+    });
+    const unsubTasks = subscribeToCollection<Task>('tasks', (data) => {
+      setTasks(data.filter(t => !t.completed));
+    });
+    return () => {
+      unsubSessions();
+      unsubTasks();
+    };
+  }, [user]);
+
   const [selectedPreset, setSelectedPreset] = useState(presets[0]);
   const [totalSeconds, setTotalSeconds] = useState(presets[0].duration * 60);
   const [remaining, setRemaining] = useState(presets[0].duration * 60);
@@ -69,40 +87,27 @@ export default function FocusMode() {
   }, [isZenMode, isRunning]);
 
   useEffect(() => {
-    setSessions(loadData<FocusSession[]>('focus_sessions', []));
-    setTasks(loadData<Task[]>('tasks', []).filter(t => !t.completed));
-  }, []);
-
-  const persist = useCallback((updated: FocusSession[]) => {
-    setSessions(updated);
-    saveData('focus_sessions', updated);
-  }, []);
-
-  useEffect(() => {
     if (isRunning && remaining > 0) {
-      timerRef.current = setInterval(() => {
-        setRemaining(r => {
-          if (r <= 1) {
-            clearInterval(timerRef.current!);
-            setIsRunning(false);
-            const session: FocusSession = {
-              id: generateId(),
-              type: selectedPreset.type,
-              durationMinutes: selectedPreset.duration,
-              completedMinutes: selectedPreset.duration,
-              completed: true,
-              createdAt: new Date().toISOString(),
-            };
-            persist([session, ...sessions]);
-            playSound('success');
-            return 0;
-          }
-          return r - 1;
-        });
+      timerRef.current = setInterval(async () => {
+        if (remaining <= 1) {
+          clearInterval(timerRef.current!);
+          setIsRunning(false);
+          const sessionData = {
+            type: selectedPreset.type,
+            durationMinutes: selectedPreset.duration,
+            completedMinutes: selectedPreset.duration,
+            completed: true,
+          };
+          await addDocument('focus_sessions', sessionData);
+          playSound('success');
+          setRemaining(0);
+        } else {
+          setRemaining(r => r - 1);
+        }
       }, 1000);
     }
     return () => { if (timerRef.current) clearInterval(timerRef.current); };
-  }, [isRunning, remaining, selectedPreset, sessions, persist, playSound]);
+  }, [isRunning, remaining, selectedPreset, playSound]);
 
   const selectPreset = (preset: typeof presets[number]) => {
     if (isRunning) return;

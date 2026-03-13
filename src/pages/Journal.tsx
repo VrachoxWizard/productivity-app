@@ -13,7 +13,8 @@ import {
   Trash2,
   Filter
 } from 'lucide-react';
-import { loadData, saveData, generateId } from '../lib/storage';
+import { useAuth } from '../components/Auth/AuthContext';
+import { useFirestore } from '../lib/firestore';
 import { systemPrompts, getPromptOfTheDay } from '../lib/prompts';
 import type { JournalEntry, MoodLevel, Prompt } from '../types';
 import './Journal.css';
@@ -29,6 +30,9 @@ const moodLabels: Record<MoodLevel, string> = {
 type JournalView = 'recent' | 'writing' | 'browsing' | 'managing';
 
 export default function Journal() {
+  const { user } = useAuth();
+  const { subscribeToCollection, addDocument, updateDocument, removeDocument } = useFirestore(user!.uid);
+
   const [entries, setEntries] = useState<JournalEntry[]>([]);
   const [customPrompts, setCustomPrompts] = useState<Prompt[]>([]);
   const [view, setView] = useState<JournalView>('recent');
@@ -49,31 +53,27 @@ export default function Journal() {
   const promptOfTheDay = getPromptOfTheDay();
 
   useEffect(() => {
-    setEntries(loadData<JournalEntry[]>('journal_entries', []));
-    setCustomPrompts(loadData<Prompt[]>('custom_prompts', []));
-  }, []);
+    const unsubEntries = subscribeToCollection<JournalEntry>('journal_entries', (data) => {
+      setEntries(data);
+    });
+    const unsubPrompts = subscribeToCollection<Prompt>('custom_prompts', (data) => {
+      setCustomPrompts(data);
+    });
+    return () => {
+      unsubEntries();
+      unsubPrompts();
+    };
+  }, [user]);
 
-  const persistEntries = useCallback((updated: JournalEntry[]) => {
-    setEntries(updated);
-    saveData('journal_entries', updated);
-  }, []);
-
-  const persistCustomPrompts = useCallback((updated: Prompt[]) => {
-    setCustomPrompts(updated);
-    saveData('custom_prompts', updated);
-  }, []);
-
-  const saveEntry = () => {
+  const saveEntry = async () => {
     if (!content.trim()) return;
-    const entry: JournalEntry = {
-      id: generateId(),
+    const entryData = {
       content: content.trim(),
       promptUsed: activePrompt || undefined,
       mood,
-      createdAt: new Date().toISOString(),
       wordCount: content.trim().split(/\s+/).filter(Boolean).length,
     };
-    persistEntries([entry, ...entries]);
+    await addDocument('journal_entries', entryData);
     resetEditor();
     setView('recent');
   };
@@ -84,8 +84,8 @@ export default function Journal() {
     setActivePrompt(null);
   };
 
-  const deleteEntry = (id: string) => {
-    persistEntries(entries.filter(e => e.id !== id));
+  const deleteEntry = async (id: string) => {
+    await removeDocument('journal_entries', id);
   };
 
   const startWithPrompt = (text: string) => {
@@ -93,20 +93,19 @@ export default function Journal() {
     setView('writing');
   };
 
-  const addCustomPrompt = () => {
+  const addCustomPrompt = async () => {
     if (!newPromptText.trim()) return;
-    const prompt: Prompt = {
-      id: generateId(),
+    const promptData = {
       text: newPromptText.trim(),
       category: newPromptCategory as Prompt['category'],
       isCustom: true,
     };
-    persistCustomPrompts([prompt, ...customPrompts]);
+    await addDocument('custom_prompts', promptData);
     setNewPromptText('');
   };
 
-  const deleteCustomPrompt = (id: string) => {
-    persistCustomPrompts(customPrompts.filter(p => p.id !== id));
+  const deleteCustomPrompt = async (id: string) => {
+    await removeDocument('custom_prompts', id);
   };
 
   const allPrompts = useMemo(() => [...systemPrompts, ...customPrompts], [customPrompts]);

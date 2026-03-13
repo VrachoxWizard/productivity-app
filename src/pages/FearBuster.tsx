@@ -19,7 +19,8 @@ import {
   BarChart3,
   Search
 } from 'lucide-react';
-import { loadData, saveData, generateId } from '../lib/storage';
+import { useAuth } from '../components/Auth/AuthContext';
+import { useFirestore } from '../lib/firestore';
 import type { TherapyLog, ExerciseType } from '../types';
 
 import ThoughtReframing from '../components/CBT/ThoughtReframing';
@@ -179,6 +180,9 @@ const ALL_EXERCISES: ExerciseDef[] = [
 ];
 
 export default function FearBuster() {
+  const { user } = useAuth();
+  const { subscribeToCollection, addDocument, removeDocument } = useFirestore(user!.uid);
+
   const [logs, setLogs] = useState<TherapyLog[]>([]);
   const [activeExercise, setActiveExercise] = useState<ExerciseType | null>(null);
   const [expandedLogId, setExpandedLogId] = useState<string | null>(null);
@@ -186,28 +190,26 @@ export default function FearBuster() {
   const [filterCategory, setFilterCategory] = useState<'All' | 'CBT' | 'DBT' | 'ACT'>('All');
 
   useEffect(() => {
-    setLogs(loadData<TherapyLog[]>('therapy_logs', []));
-  }, []);
+    const unsubscribe = subscribeToCollection<TherapyLog>('therapy_logs', (data) => {
+      setLogs(data);
+    });
+    return () => unsubscribe();
+  }, [user]);
 
-  const persist = useCallback((updated: TherapyLog[]) => {
-    setLogs(updated);
-    saveData('therapy_logs', updated);
-  }, []);
-
-  const onExerciseComplete = (data: any) => {
-    const log: TherapyLog = {
-      id: generateId(),
+  const onExerciseComplete = async (data: any) => {
+    const logData = {
       type: activeExercise!,
       moodBefore: data.moodBefore,
       moodAfter: data.moodAfter,
       data: data,
-      createdAt: new Date().toISOString(),
     };
-    persist([log, ...logs]);
+    await addDocument('therapy_logs', logData);
     setActiveExercise(null);
   };
 
-  const deleteLog = (id: string) => persist(logs.filter(l => l.id !== id));
+  const deleteLog = async (id: string) => {
+    await removeDocument('therapy_logs', id);
+  };
 
   const filteredExercises = useMemo(() => {
     return ALL_EXERCISES.filter(ex => {

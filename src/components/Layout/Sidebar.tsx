@@ -7,9 +7,12 @@ import {
   Timer,
   ChevronLeft,
   ChevronRight,
+  LogOut,
+  User as UserIcon
 } from 'lucide-react';
 import { useState } from 'react';
-import { motion, useMotionValue, useSpring } from 'framer-motion';
+import { motion, useMotionValue, useSpring, AnimatePresence } from 'framer-motion';
+import { useAuth } from '@/components/Auth/AuthContext';
 import type { ModuleAccent } from '@/types';
 import './Sidebar.css';
 
@@ -65,6 +68,7 @@ interface SidebarProps {
 export default function Sidebar({ onAccentChange }: SidebarProps) {
   const location = useLocation();
   const [collapsed, setCollapsed] = useState(false);
+  const { user, logout } = useAuth();
 
   const isActive = (path: string) => {
     if (path === '/') return location.pathname === '/';
@@ -130,11 +134,31 @@ export default function Sidebar({ onAccentChange }: SidebarProps) {
         })}
       </ul>
 
-      {!collapsed && (
-        <div className="sidebar__footer">
-          <p className="sidebar__quote">One step at a time.</p>
-        </div>
-      )}
+      <div className="sidebar__footer">
+        <AnimatePresence>
+          {!collapsed ? (
+            <motion.div 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="sidebar__user"
+            >
+              <div className="user-info">
+                <UserIcon size={14} className="user-icon" />
+                <span className="user-email">{user?.email?.split('@')[0]}</span>
+              </div>
+              <button className="btn btn-icon btn-ghost btn-sm logout-btn" onClick={logout} title="Log out">
+                <LogOut size={16} />
+              </button>
+            </motion.div>
+          ) : (
+             <button className="btn btn-icon btn-ghost logout-btn--collapsed" onClick={logout} title="Log out">
+               <LogOut size={16} />
+             </button>
+          )}
+        </AnimatePresence>
+        {!collapsed && <p className="sidebar__quote">One step at a time.</p>}
+      </div>
     </nav>
   );
 }

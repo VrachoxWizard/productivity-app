@@ -1,7 +1,8 @@
 import { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Plus, Check, Trash2, Zap, Star, Clock } from 'lucide-react';
-import { loadData, saveData, generateId } from '../lib/storage';
+import { useAuth } from '../components/Auth/AuthContext';
+import { useFirestore } from '../lib/firestore';
 import type { Task } from '../types';
 import './Tasks.css';
 
@@ -14,47 +15,48 @@ const priorityConfig = {
 };
 
 export default function Tasks() {
+  const { user } = useAuth();
+  const { subscribeToCollection, addDocument, updateDocument, removeDocument } = useFirestore(user!.uid);
+  
   const [tasks, setTasks] = useState<Task[]>([]);
   const [newTitle, setNewTitle] = useState('');
   const [filter, setFilter] = useState<FilterMode>('active');
   const [selectedPriority, setSelectedPriority] = useState<Task['priority']>('important');
 
   useEffect(() => {
-    setTasks(loadData<Task[]>('tasks', []));
-  }, []);
+    const unsubscribe = subscribeToCollection<Task>('tasks', (data) => {
+      setTasks(data);
+    });
+    return () => unsubscribe();
+  }, [user]);
 
-  const persist = useCallback((updated: Task[]) => {
-    setTasks(updated);
-    saveData('tasks', updated);
-  }, []);
-
-  const addTask = () => {
+  const addTask = async () => {
     const title = newTitle.trim();
     if (!title) return;
-    const task: Task = {
-      id: generateId(),
+    
+    const taskData = {
       title,
       description: '',
       priority: selectedPriority,
       completed: false,
-      createdAt: new Date().toISOString(),
     };
-    persist([task, ...tasks]);
+    
+    await addDocument('tasks', taskData);
     setNewTitle('');
   };
 
-  const toggleTask = (id: string) => {
-    persist(
-      tasks.map(t =>
-        t.id === id
-          ? { ...t, completed: !t.completed, completedAt: !t.completed ? new Date().toISOString() : undefined }
-          : t
-      )
-    );
+  const toggleTask = async (id: string) => {
+    const task = tasks.find(t => t.id === id);
+    if (!task) return;
+    
+    await updateDocument('tasks', id, { 
+      completed: !task.completed,
+      completedAt: !task.completed ? new Date().toISOString() : null
+    });
   };
 
-  const deleteTask = (id: string) => {
-    persist(tasks.filter(t => t.id !== id));
+  const deleteTask = async (id: string) => {
+    await removeDocument('tasks', id);
   };
 
   const filtered = tasks.filter(t => {

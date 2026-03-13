@@ -1,13 +1,17 @@
 import React, { useRef } from 'react';
-import { Download, Upload, ShieldCheck, AlertCircle } from 'lucide-react';
-import { saveData } from '../lib/storage';
+import { Download, Upload, ShieldCheck, Cloud } from 'lucide-react';
+import { useAuth } from '../components/Auth/AuthContext';
+import { useFirestore } from '../lib/firestore';
 
 const BACKUP_KEYS = ['tasks', 'journal_entries', 'therapy_logs', 'focus_sessions', 'custom_prompts'];
 
 export default function DataBackup() {
+  const { user } = useAuth();
+  const { addDocument } = useFirestore(user?.uid || '');
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleExport = () => {
+    // Collect from localStorage for legacy backup
     const backup: Record<string, any> = {};
     BACKUP_KEYS.forEach(key => {
       const data = localStorage.getItem(`mindspace_${key}`);
@@ -28,56 +32,56 @@ export default function DataBackup() {
     if (!file) return;
 
     const reader = new FileReader();
-    reader.onload = (event) => {
+    reader.onload = async (event) => {
       try {
         const content = event.target?.result as string;
         const data = JSON.parse(content);
 
-        // Basic validation: must be an object and have at least one valid key
-        if (typeof data !== 'object' || data === null) throw new Error('Invalid backup format');
+        if (typeof data !== 'object' || data === null) throw new Error('Invalid format');
         
         const importedKeys = Object.keys(data);
         const validKeysFound = importedKeys.filter(k => BACKUP_KEYS.includes(k));
 
         if (validKeysFound.length === 0) {
-          alert('No valid MindSpace data found in this file.');
+          alert('No valid MindSpace data found.');
           return;
         }
 
-        if (confirm(`Found ${validKeysFound.length} data modules. This will merge/overwrite your current data. Continue?`)) {
-          validKeysFound.forEach(key => {
-            saveData(key, data[key]);
-          });
-          
-          // Trigger global update event
-          window.dispatchEvent(new CustomEvent('mindspace-data-changed'));
-          alert('Backup imported successfully!');
+        if (confirm(`Found ${validKeysFound.length} data modules. Sync them to your Cloud account?`)) {
+          for (const key of validKeysFound) {
+            const items = Array.isArray(data[key]) ? data[key] : [];
+            for (const item of items) {
+              // Strip old IDs and IDs to let Firestore generate new ones or keep them?
+              // Usually better to let Firestore generate new ones to avoid collisions if merging
+              const { id, ...cleanItem } = item;
+              await addDocument(key, cleanItem);
+            }
+          }
+          alert('Data synced to cloud successfully!');
         }
       } catch (err) {
-        console.error('Import failed:', err);
-        alert('Failed to parse backup file. Please ensure it is a valid MindSpace JSON.');
+        alert('Failed to parse backup file.');
       }
     };
     reader.readAsText(file);
-    // Reset input
     if (fileInputRef.current) fileInputRef.current.value = '';
   };
 
   return (
     <div className="data-backup glass-card" style={{ padding: 'var(--space-4)', marginTop: 'var(--space-6)' }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)', marginBottom: 'var(--space-4)' }}>
-        <ShieldCheck size={18} style={{ color: 'var(--accent)' }} />
-        <h4 style={{ margin: 0, fontSize: 'var(--text-sm)' }}>Data Safety</h4>
+        <Cloud size={18} style={{ color: 'var(--accent)' }} />
+        <h4 style={{ margin: 0, fontSize: 'var(--text-sm)' }}>Cloud & Security</h4>
       </div>
       
       <p className="text-muted" style={{ fontSize: 'var(--text-xs)', marginBottom: 'var(--space-4)' }}>
-        Your data is stored locally. Export regularly to keep a backup or move between devices.
+        Your data is now safely synced to the cloud. You can still import legacy local backups here.
       </p>
 
       <div style={{ display: 'flex', gap: 'var(--space-2)' }}>
         <button className="btn btn-ghost btn-sm" onClick={handleExport} style={{ flex: 1, gap: '6px' }}>
           <Download size={14} />
-          Export
+          Backup Local
         </button>
         <button 
           className="btn btn-ghost btn-sm" 
@@ -85,7 +89,7 @@ export default function DataBackup() {
           style={{ flex: 1, gap: '6px' }}
         >
           <Upload size={14} />
-          Import
+          Sync Local
         </button>
       </div>
 
