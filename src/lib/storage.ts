@@ -21,6 +21,7 @@ export function loadData<T>(key: string, fallback: T): T {
 export function saveData<T>(key: string, data: T): void {
   try {
     localStorage.setItem(getKey(key), JSON.stringify(data));
+    window.dispatchEvent(new CustomEvent('mindspace-data-changed', { detail: { key } }));
   } catch (e) {
     console.error(`[MindSpace] Failed to save ${key}:`, e);
   }

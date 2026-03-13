@@ -20,9 +20,12 @@ import {
   Droplet
 } from 'lucide-react';
 import { loadData, saveData, generateId } from '../lib/storage';
+import { useMindSpaceData } from '../hooks/useMindSpaceData';
 import type { Task, JournalEntry, TherapyLog, FocusSession, MoodLevel } from '../types';
+import { generateDynamicInsight } from '../lib/analytics';
 import StatsGraph from '../components/StatsGraph';
 import EmotionWheel from '../components/EmotionWheel';
+import DataBackup from '../components/DataBackup';
 import './Dashboard.css';
 
 function getGreeting(): { text: string; icon: React.ReactNode } {
@@ -49,26 +52,16 @@ const fadeUp = {
 
 export default function Dashboard() {
   const greeting = getGreeting();
-  const [stats, setStats] = useState({
-    tasksToday: 0,
-    tasksCompleted: 0,
-    journalStreak: 0,
-    cbtExercises: 0,
-    focusSessions: 0,
-  });
   
-  const [moodHistory, setMoodHistory] = useState<number[]>([]);
-  const [focusHistory, setFocusHistory] = useState<number[]>([]);
+  const tasks = useMindSpaceData<Task[]>('tasks', []);
+  const journals = useMindSpaceData<JournalEntry[]>('journal_entries', []);
+  const therapyLogs = useMindSpaceData<TherapyLog[]>('therapy_logs', []);
+  const sessions = useMindSpaceData<FocusSession[]>('focus_sessions', []);
 
-  useEffect(() => {
-    const tasks = loadData<Task[]>('tasks', []);
-    const journals = loadData<JournalEntry[]>('journal_entries', []);
-    const therapyLogs = loadData<TherapyLog[]>('therapy_logs', []);
-    const sessions = loadData<FocusSession[]>('focus_sessions', []);
-
+  const stats = useMemo(() => {
     const today = new Date().toISOString().slice(0, 10);
     const tasksToday = tasks.filter(t => t.createdAt.startsWith(today));
-
+    
     // Calculate journal streak
     let streak = 0;
     const sortedJournals = [...journals].sort((a, b) => b.createdAt.localeCompare(a.createdAt));
@@ -84,26 +77,31 @@ export default function Dashboard() {
       }
     }
 
-    // Mood History (last 7 entries)
-    const moods = sortedJournals.slice(0, 7).reverse().map(j => j.mood);
-    setMoodHistory(moods);
-
-    // Focus History (sessions per day for last 7 days)
-    const focusDays = Array(7).fill(0);
-    sessions.forEach(s => {
-      const daysAgo = Math.floor((Date.now() - new Date(s.createdAt).getTime()) / (1000 * 60 * 60 * 24));
-      if (daysAgo < 7) focusDays[6 - daysAgo]++;
-    });
-    setFocusHistory(focusDays.map(v => Math.min(v + 1, 5))); // Normalize 1-5 for graph
-
-    setStats({
+    return {
       tasksToday: tasksToday.length,
       tasksCompleted: tasksToday.filter(t => t.completed).length,
       journalStreak: streak,
       cbtExercises: therapyLogs.length,
       focusSessions: sessions.filter(s => s.completed).length,
+    };
+  }, [tasks, journals, therapyLogs, sessions]);
+
+  const moodHistory = useMemo(() => {
+    return [...journals]
+      .sort((a, b) => b.createdAt.localeCompare(a.createdAt))
+      .slice(0, 7)
+      .reverse()
+      .map(j => j.mood);
+  }, [journals]);
+
+  const focusHistory = useMemo(() => {
+    const focusDays = Array(7).fill(0);
+    sessions.forEach(s => {
+      const daysAgo = Math.floor((Date.now() - new Date(s.createdAt).getTime()) / (1000 * 60 * 60 * 24));
+      if (daysAgo < 7) focusDays[6 - daysAgo]++;
     });
-  }, []);
+    return focusDays.map(v => Math.min(v + 1, 5));
+  }, [sessions]);
 
   const focusLevel = useMemo(() => {
     const count = stats.focusSessions;
@@ -112,6 +110,10 @@ export default function Dashboard() {
     if (count < 15) return { label: 'Bloom', color: 'var(--accent)' };
     return { label: 'Forest', color: 'var(--accent-tasks)' };
   }, [stats.focusSessions]);
+
+  const dynamicInsight = useMemo(() => 
+    generateDynamicInsight(sessions, journals), 
+  [sessions, journals]);
 
   return (
     <motion.div
@@ -193,10 +195,11 @@ export default function Dashboard() {
             <h3>Weekly Insight</h3>
           </div>
           <div className="insight-content">
-            <p>"Your energy levels tend to dip consistently around 3 PM. Consider scheduling your DBT Breathwork then to maintain flow."</p>
+            <p>"{dynamicInsight.text}"</p>
             <div className="insight-tags">
-              <span className="insight-tag">Behavioral Trend</span>
-              <span className="insight-tag">Pro Tip</span>
+              {dynamicInsight.tags.map(tag => (
+                <span key={tag} className="insight-tag">{tag}</span>
+              ))}
             </div>
           </div>
         </motion.div>
@@ -218,6 +221,11 @@ export default function Dashboard() {
               <span>Breathe</span>
             </Link>
           </div>
+        </motion.div>
+
+        {/* Data Safety */}
+        <motion.div variants={fadeUp}>
+          <DataBackup />
         </motion.div>
       </div>
     </motion.div>
