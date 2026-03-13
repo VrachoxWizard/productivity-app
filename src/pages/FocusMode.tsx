@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
+import { useState, useEffect, useRef, useCallback, useMemo, memo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Play, 
@@ -34,6 +34,8 @@ const ambientSounds = [
   { id: 'noise', label: 'Brown Noise', url: 'https://www.soundjay.com/misc/sounds/white-noise-01.mp3' },
   { id: 'waves', label: 'Waves', url: 'https://www.soundjay.com/nature/ocean-wave-1.mp3' },
 ];
+
+const CIRCUMFERENCE = 2 * Math.PI * 120;
 
 export default function FocusMode() {
   const [sessions, setSessions] = useState<FocusSession[]>([]);
@@ -121,13 +123,13 @@ export default function FocusMode() {
     if (timerRef.current) clearInterval(timerRef.current);
   };
 
-  const formatTime = (s: number) => {
+  const formatTime = useCallback((s: number) => {
     const mins = Math.floor(s / 60);
     const secs = s % 60;
     return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
-  };
+  }, []);
 
-  const toggleMixerSound = (id: string) => {
+  const toggleMixerSound = useCallback((id: string) => {
     const sound = ambientSounds.find(s => s.id === id);
     if (!sound) return;
 
@@ -143,12 +145,11 @@ export default function FocusMode() {
       audioRefs.current[id].play().catch(() => {});
       setActiveSounds(prev => ({ ...prev, [id]: true }));
     }
-  };
+  }, [activeSounds]);
 
   const progress = 1 - remaining / totalSeconds;
-  const circumference = 2 * Math.PI * 120;
-  const offset = circumference * (1 - progress);
-  const activeTask = tasks.find(t => t.id === selectedTaskId);
+  const offset = CIRCUMFERENCE * (1 - progress);
+  const activeTask = useMemo(() => tasks.find(t => t.id === selectedTaskId), [tasks, selectedTaskId]);
 
   return (
     <div className={`focus-page ${isRunning ? 'focus-page--running' : ''} ${isZenMode ? 'focus-page--zen' : ''}`}>
@@ -184,7 +185,7 @@ export default function FocusMode() {
                 <div className={`timer-aura ${isRunning ? 'active' : ''}`} />
                 <svg className="timer-ring" viewBox="0 0 260 260">
                   <circle cx="130" cy="130" r="120" fill="none" stroke="var(--bg-elevated)" strokeWidth="4" />
-                  <motion.circle cx="130" cy="130" r="120" fill="none" stroke="var(--accent)" strokeWidth="6" strokeLinecap="round" strokeDasharray={circumference} strokeDashoffset={offset} transform="rotate(-90 130 130)" />
+                  <motion.circle cx="130" cy="130" r="120" fill="none" stroke="var(--accent)" strokeWidth="6" strokeLinecap="round" strokeDasharray={CIRCUMFERENCE} strokeDashoffset={offset} transform="rotate(-90 130 130)" />
                 </svg>
                 <div className="timer-ring__display">
                   <span className="timer-ring__time">{formatTime(remaining)}</span>
@@ -198,7 +199,7 @@ export default function FocusMode() {
               </motion.div>
             ) : (
               <motion.div key="breathing" className="breathing-container" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-                <BreathingGuide />
+                <MemoizedBreathingGuide />
               </motion.div>
             )}
           </AnimatePresence>
@@ -279,7 +280,7 @@ function FocusHeatmap({ sessions }: { sessions: FocusSession[] }) {
   );
 }
 
-function BreathingGuide() {
+const MemoizedBreathingGuide = memo(function BreathingGuide() {
   const [phase, setPhase] = useState<'in' | 'hold' | 'out'>('in');
   useEffect(() => {
     const cycle = () => { setPhase('in'); setTimeout(() => setPhase('hold'), 4000); setTimeout(() => setPhase('out'), 7000); };
@@ -293,4 +294,4 @@ function BreathingGuide() {
       <p className="breathing__label">{phase === 'in' ? 'Breathe in…' : phase === 'hold' ? 'Hold…' : 'Breathe out…'}</p>
     </div>
   );
-}
+});

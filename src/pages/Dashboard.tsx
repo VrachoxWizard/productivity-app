@@ -51,7 +51,7 @@ const fadeUp = {
 };
 
 export default function Dashboard() {
-  const greeting = getGreeting();
+  const greeting = useMemo(() => getGreeting(), []);
   
   const tasks = useMindSpaceData<Task[]>('tasks', []);
   const journals = useMindSpaceData<JournalEntry[]>('journal_entries', []);
