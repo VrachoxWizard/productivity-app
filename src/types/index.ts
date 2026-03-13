@@ -36,7 +36,16 @@ export type ExerciseType =
   | 'worry_time'
   | 'dbt_tipp'
   | 'act_values'
-  | 'cbt_exposure';
+  | 'cbt_exposure'
+  | 'dbt_stop'
+  | 'dbt_radical_acceptance'
+  | 'act_defusion'
+  | 'act_passenger'
+  | 'cbt_distortions'
+  | 'cbt_behavioral_activation'
+  | 'adhd_dopamine_menu'
+  | 'prod_eisenhower'
+  | 'anti_perfectionism_mvo';
 
 export interface TherapyLog {
   id: string;

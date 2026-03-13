@@ -29,6 +29,17 @@ import DbtTipp from '../components/Therapy/DbtTipp';
 import ActValues from '../components/Therapy/ActValues';
 import ExposureLadder from '../components/Therapy/ExposureLadder';
 
+// Specialized Modules
+import DbtStop from '../components/Therapy/DbtStop';
+import DbtRadicalAcceptance from '../components/Therapy/DbtRadicalAcceptance';
+import ActDefusion from '../components/Therapy/ActDefusion';
+import ActPassenger from '../components/Therapy/ActPassenger';
+import CbtDistortions from '../components/Therapy/CbtDistortions';
+import CbtBehavioralActivation from '../components/Therapy/CbtBehavioralActivation';
+import AdhdDopamineMenu from '../components/Therapy/AdhdDopamineMenu';
+import ProdEisenhower from '../components/Therapy/ProdEisenhower';
+import AntiPerfectionismMvo from '../components/Therapy/AntiPerfectionismMvo';
+
 import './FearBuster.css';
 
 interface ExerciseDef {
@@ -88,6 +99,82 @@ const ALL_EXERCISES: ExerciseDef[] = [
     category: 'ACT',
     icon: <BarChart3 size={24} />,
     color: 'var(--accent-journal)',
+  },
+  // New DBT
+  {
+    id: 'dbt_stop',
+    title: 'STOP Skill',
+    desc: 'Halt impulsive actions with mindfulness.',
+    category: 'DBT',
+    icon: <Shield size={24} />,
+    color: 'var(--priority-urgent)',
+  },
+  {
+    id: 'dbt_radical_acceptance',
+    title: 'Radical Acceptance',
+    desc: 'Stop fighting reality to reduce suffering.',
+    category: 'DBT',
+    icon: <Info size={24} />,
+    color: 'var(--accent-tasks)',
+  },
+  // New ACT
+  {
+    id: 'act_defusion',
+    title: 'Leaves on a Stream',
+    desc: 'Visualize thoughts drifting away.',
+    category: 'ACT',
+    icon: <Wind size={24} />,
+    color: 'var(--accent)',
+  },
+  {
+    id: 'act_passenger',
+    title: 'The Life Bus',
+    desc: 'Drive toward values despite difficult thoughts.',
+    category: 'ACT',
+    icon: <Zap size={24} />,
+    color: 'var(--accent-journal)',
+  },
+  // New CBT
+  {
+    id: 'cbt_distortions',
+    title: 'Distortion Identifier',
+    desc: 'Break down the logic of negative thoughts.',
+    category: 'CBT',
+    icon: <BrainCircuit size={24} />,
+    color: 'var(--accent-fear)',
+  },
+  {
+    id: 'cbt_behavioral_activation',
+    title: 'Behavioral Activation',
+    desc: 'Break cycles with achievable micro-wins.',
+    category: 'CBT',
+    icon: <Zap size={24} />,
+    color: 'var(--accent)',
+  },
+  // New ADHD/Prod
+  {
+    id: 'adhd_dopamine_menu',
+    title: 'Dopamine Menu',
+    desc: 'Healthy stimulation for ADHD minds.',
+    category: 'ACT', // Grouped in therapeutic hub for now
+    icon: <Zap size={24} />,
+    color: 'var(--accent-tasks)',
+  },
+  {
+    id: 'prod_eisenhower',
+    title: 'Eisenhower Matrix',
+    desc: 'Priority board for intense focus.',
+    category: 'CBT',
+    icon: <BarChart3 size={24} />,
+    color: 'var(--accent-journal)',
+  },
+  {
+    id: 'anti_perfectionism_mvo',
+    title: 'MVO Builder',
+    desc: 'Minimum Viable Outcome construction.',
+    category: 'CBT',
+    icon: <Zap size={24} />,
+    color: 'var(--accent-fear)',
   }
 ];
 
@@ -220,12 +307,18 @@ export default function FearBuster() {
                       </div>
                       
                       <div className="cbt-log__summary">
-                        {log.type === 'thought_reframing' && <p>Reframed: <em>{log.data.fear}</em></p>}
-                        {log.type === 'grounding_54321' && <p>Sensory scan completed.</p>}
-                        {log.type === 'worry_time' && <p>Worry processed: <em>{log.data.worry}</em></p>}
-                        {log.type === 'dbt_tipp' && <p>Completed distress tolerance steps.</p>}
-                        {log.type === 'act_values' && <p>Updated core life values.</p>}
                         {log.type === 'cbt_exposure' && <p>Progressed on: <em>{log.data.fear}</em></p>}
+                        
+                        {/* New Summaries */}
+                        {log.type === 'dbt_stop' && <p>Crisis halted with STOP skill.</p>}
+                        {log.type === 'dbt_radical_acceptance' && <p>Accepted: <em>{log.data.reality}</em></p>}
+                        {log.type === 'act_defusion' && <p>Observed {log.data.totalObserved} leaves on the stream.</p>}
+                        {log.type === 'act_passenger' && <p>Kept driving with {log.data.passengers?.length || 0} passengers.</p>}
+                        {log.type === 'cbt_distortions' && <p>Analyzed thought: <em>{log.data.thought}</em></p>}
+                        {log.type === 'cbt_behavioral_activation' && <p>Completed {log.data.tasks?.length || 0} micro-missions.</p>}
+                        {log.type === 'adhd_dopamine_menu' && <p>Updated healthy stimulation menu.</p>}
+                        {log.type === 'prod_eisenhower' && <p>Prioritized {log.data.tasks?.length || 0} focus tasks.</p>}
+                        {log.type === 'anti_perfectionism_mvo' && <p>MVO defined for: <em>{log.data.dauntingTask}</em></p>}
                       </div>
 
                       {expandedLogId === log.id && (
@@ -256,6 +349,46 @@ export default function FearBuster() {
                               ))}
                             </div>
                           )}
+
+                          {/* New Details */}
+                          {log.type === 'dbt_stop' && (
+                            <div className="log-details-grid" style={{ fontSize: 'var(--text-xs)' }}>
+                              <div><strong>Observe:</strong> {log.data.observation}</div>
+                              <div><strong>Proceed:</strong> {log.data.mindfulAction}</div>
+                            </div>
+                          )}
+                          {log.type === 'dbt_radical_acceptance' && (
+                            <div className="log-details-grid" style={{ fontSize: 'var(--text-xs)' }}>
+                              <div><strong>Reality:</strong> {log.data.reality}</div>
+                              <div><strong>Causes:</strong> {log.data.causes}</div>
+                            </div>
+                          )}
+                          {log.type === 'cbt_distortions' && (
+                            <div style={{ fontSize: 'var(--text-xs)' }}>
+                              <div style={{ marginBottom: '8px' }}><strong>Distortions:</strong> {log.data.selectedDistortions?.join(', ')}</div>
+                              <div><strong>Balanced Insight:</strong> {log.data.balancedThought}</div>
+                            </div>
+                          )}
+                          {log.type === 'adhd_dopamine_menu' && (
+                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px', fontSize: 'var(--text-xxs)' }}>
+                               {Object.entries(log.data || {}).map(([key, items]: any) => (
+                                 <div key={key}><strong>{key.toUpperCase()}:</strong> {items.length}</div>
+                               ))}
+                            </div>
+                          )}
+                          {log.type === 'prod_eisenhower' && (
+                             <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px' }}>
+                               {log.data.tasks?.map((t: any) => (
+                                 <span key={t.id} className="badge" style={{ fontSize: '9px', background: 'var(--bg-elevated)' }}>{t.text}</span>
+                               ))}
+                             </div>
+                          )}
+                          {log.type === 'anti_perfectionism_mvo' && (
+                             <div style={{ fontSize: 'var(--text-xs)' }}>
+                               <div><strong>Goal:</strong> {log.data.mvoDefinition}</div>
+                               <div><strong>Limit:</strong> {log.data.timeLimit}m</div>
+                             </div>
+                          )}
                         </motion.div>
                       )}
                     </div>
@@ -278,6 +411,17 @@ export default function FearBuster() {
             {activeExercise === 'dbt_tipp' && <DbtTipp onComplete={onExerciseComplete} onCancel={() => setActiveExercise(null)} />}
             {activeExercise === 'act_values' && <ActValues onComplete={onExerciseComplete} onCancel={() => setActiveExercise(null)} />}
             {activeExercise === 'cbt_exposure' && <ExposureLadder onComplete={onExerciseComplete} onCancel={() => setActiveExercise(null)} />}
+            
+            {/* New Exercises */}
+            {activeExercise === 'dbt_stop' && <DbtStop onComplete={onExerciseComplete} onCancel={() => setActiveExercise(null)} />}
+            {activeExercise === 'dbt_radical_acceptance' && <DbtRadicalAcceptance onComplete={onExerciseComplete} onCancel={() => setActiveExercise(null)} />}
+            {activeExercise === 'act_defusion' && <ActDefusion onComplete={onExerciseComplete} onCancel={() => setActiveExercise(null)} />}
+            {activeExercise === 'act_passenger' && <ActPassenger onComplete={onExerciseComplete} onCancel={() => setActiveExercise(null)} />}
+            {activeExercise === 'cbt_distortions' && <CbtDistortions onComplete={onExerciseComplete} onCancel={() => setActiveExercise(null)} />}
+            {activeExercise === 'cbt_behavioral_activation' && <CbtBehavioralActivation onComplete={onExerciseComplete} onCancel={() => setActiveExercise(null)} />}
+            {activeExercise === 'adhd_dopamine_menu' && <AdhdDopamineMenu onComplete={onExerciseComplete} onCancel={() => setActiveExercise(null)} />}
+            {activeExercise === 'prod_eisenhower' && <ProdEisenhower onComplete={onExerciseComplete} onCancel={() => setActiveExercise(null)} />}
+            {activeExercise === 'anti_perfectionism_mvo' && <AntiPerfectionismMvo onComplete={onExerciseComplete} onCancel={() => setActiveExercise(null)} />}
           </motion.div>
         )}
       </AnimatePresence>
